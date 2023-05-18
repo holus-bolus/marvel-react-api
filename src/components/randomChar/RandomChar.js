@@ -3,6 +3,7 @@ import mjolnir from "../../resources/img/mjolnir.png";
 import { Component } from "react";
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 
 class RandomChar extends Component {
   state = {
@@ -21,10 +22,26 @@ class RandomChar extends Component {
   // };
   marvelService = new MarvelService();
 
-  constructor(props) {
-    super(props);
+  componentDidMount() {
+    console.log("Mounting");
     this.updateChar();
+    this.timerId = setInterval(this.updateChar, 5000);
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log("Updating");
+  }
+
+  componentWillUnmount() {
+    console.log("Unmounting");
+    clearInterval(this.timerId);
+  }
+
+  // constructor(props) {
+  //   super(props);
+  //   // this.updateChar();
+  //   // setInterval(this.updateChar, 5000);
+  // }
 
   onError = () => {
     this.setState({ loading: false, error: true });
@@ -62,14 +79,20 @@ class RandomChar extends Component {
   // )
   // )
   //     ;
+  // };
 
   render() {
     // const { name, description, thumbnail, homepage, wiki, error } = this.state;
-    const { char, loading } = this.state;
-
+    const { char, loading, error } = this.state;
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error) ? <View char={char} /> : null;
     return (
       <div className="randomchar">
-        {loading ? <Spinner /> : <View char={char} />}
+        {errorMessage}
+        {spinner}
+        {content}
+        {/*{loading ? <Spinner /> : <View char={char} />}*/}
         {/*<div className="randomchar__block">*/}
         {/*  <img*/}
         {/*    src={thumbnail}*/}
